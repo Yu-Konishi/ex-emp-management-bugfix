@@ -75,6 +75,9 @@ public class AdministratorController {
 		if(administrator != null) {
 			result.addError(new FieldError(result.getObjectName(), "mailAddress", "このメールアドレスは既に登録されています"));
 		}
+		if(!form.getConfirmationPassword().equals("") && !form.getPassword().equals(form.getConfirmationPassword())) {
+			result.addError(new FieldError(result.getObjectName(), "confirmationPassword", "パスワードと不一致です"));
+		}
 		if(result.hasErrors()) {
 			return toInsert();
 		}
