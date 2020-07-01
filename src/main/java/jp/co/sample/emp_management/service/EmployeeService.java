@@ -67,4 +67,22 @@ public class EmployeeService {
 		}
 		return employeeList;
 	}
+	
+	/**
+	 * 従業員情報を登録します.
+	 * 
+	 * @param employee　従業員情報
+	 */
+	public void insert(Employee employee) {
+		employeeRepository.insert(employee);
+	}
+	
+	/**
+	 * 従業員情報の数を取得します.
+	 * 
+	 * @return 従業員情報の数
+	 */
+	public Integer getDataSize() {
+		return employeeRepository.getDataSize();
+	}
 }

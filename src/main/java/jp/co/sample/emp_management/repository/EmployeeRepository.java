@@ -96,4 +96,27 @@ public class EmployeeRepository {
 		List<Employee> employeeList = template.query(sql, param,EMPLOYEE_ROW_MAPPER);
 		return employeeList;
 	}
+	
+	/**
+	 * 従業員情報を挿入します.
+	 * 
+	 * @param employee 従業員情報
+	 */
+	public void insert(Employee employee) {
+		SqlParameterSource param = new BeanPropertySqlParameterSource(employee);
+		String sql = "insert into employees(id,name,image,gender,hire_date,mail_address,zip_code,address,telephone,salary,characteristics,dependents_count)values(:id,:name,:image,:gender,:hireDate,:mailAddress,:zipCode,:address,:telephone,:salary,:characteristics,:dependentsCount);";
+		template.update(sql, param);
+	}
+	
+	/**
+	 * 従業員情報の数を取得します.
+	 * 
+	 * @return 従業員情報の数	
+	 */
+	public Integer getDataSize() {
+		String sql = "SELECT count(*) FROM employees;";
+		SqlParameterSource param = new MapSqlParameterSource();
+		Integer dataSize = template.queryForObject(sql, param, Integer.class);
+		return dataSize;
+	}
 }
