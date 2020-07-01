@@ -52,4 +52,19 @@ public class EmployeeService {
 	public void update(Employee employee) {
 		employeeRepository.update(employee);
 	}
+	
+	/**
+	 * 検索ワードが含まれる名前の従業員情報を取得します.
+	 * @param searchWord 検索ワード
+	 * @return　該当した従業員情報　検索ワードが空文字の場合は全従業員情報
+	 */
+	public List<Employee> searchName(String searchWord){
+		List<Employee> employeeList;
+		if(searchWord.isEmpty()) {
+			employeeList = employeeRepository.findAll();
+		} else {
+			employeeList = employeeRepository.findBySearchWord(searchWord);
+		}
+		return employeeList;
+	}
 }

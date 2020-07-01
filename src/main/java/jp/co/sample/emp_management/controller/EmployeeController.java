@@ -92,4 +92,21 @@ public class EmployeeController {
 		employeeService.update(employee);
 		return "redirect:/employee/showList";
 	}
+	
+	/**
+	 * 検索ワードが含まれる名前の従業員情報を取得します.
+	 * @param searchWord 検索ワード
+	 * @param model　リクエストスコープ
+	 * @return 従業員一覧画面
+	 */
+	@RequestMapping("/searchName")
+	public String searchName(String searchWord,Model model) {
+		List<Employee> employeeList = employeeService.searchName(searchWord);
+		if(employeeList.size() == 0) {
+			employeeList = employeeService.showList();
+			model.addAttribute("error","1件もありませんでした");
+		}
+		model.addAttribute("employeeList",employeeList);
+		return "employee/list";
+	}
 }
