@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -73,7 +74,12 @@ public class AdministratorController {
 		if(result.hasErrors()) {
 			return toInsert();
 		}
-		Administrator administrator = new Administrator();
+		Administrator administrator = administratorService.checkMailAddress(form.getMailAddress());
+		if(administrator != null) {
+			result.addError(new FieldError(result.getObjectName(), "mailAddress", "このメールアドレスは既に登録されています"));
+			return toInsert();
+		}
+		administrator = new Administrator();
 		// フォームからドメインにプロパティ値をコピー
 		BeanUtils.copyProperties(form, administrator);
 		administratorService.insert(administrator);
