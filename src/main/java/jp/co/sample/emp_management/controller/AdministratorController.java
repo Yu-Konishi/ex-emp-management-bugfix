@@ -71,12 +71,11 @@ public class AdministratorController {
 	 */
 	@RequestMapping("/insert")
 	public String insert(@Validated InsertAdministratorForm form,BindingResult result) {
-		if(result.hasErrors()) {
-			return toInsert();
-		}
 		Administrator administrator = administratorService.checkMailAddress(form.getMailAddress());
 		if(administrator != null) {
 			result.addError(new FieldError(result.getObjectName(), "mailAddress", "このメールアドレスは既に登録されています"));
+		}
+		if(result.hasErrors()) {
 			return toInsert();
 		}
 		administrator = new Administrator();
