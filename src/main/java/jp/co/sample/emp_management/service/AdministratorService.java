@@ -25,11 +25,6 @@ public class AdministratorService {
 	
 	@Autowired
 	private PasswordEncoder passwordEncoder;
-
-	@Bean
-	public PasswordEncoder passworEncoder() {
-		return new BCryptPasswordEncoder();
-	}
 	
 	/**
 	 * 管理者情報を登録します.
