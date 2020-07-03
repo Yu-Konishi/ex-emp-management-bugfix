@@ -144,15 +144,13 @@ public class EmployeeController {
 	@RequestMapping("/insert")
 	public synchronized String insert(@Validated InsertEmployeeForm form, BindingResult result) {
 		String telephone = form.getTelephone().replace(",", "-");
-		if (telephone != null) {
+		if (!result.hasFieldErrors("telephone")) {
 			if (!Pattern.matches("^0[1-9]0.*", telephone) && telephone.replace("-", "").length() != 10) {
-				if (!result.hasFieldErrors("telephone")) {
 					result.addError(new FieldError(result.getObjectName(), "telephone", "電話番号が不正です"));
-				}
 			}
 		}
-		if (form.getSalary().length() > 6 || Integer.parseInt(form.getSalary()) > 500000) {
-			if (!result.hasFieldErrors("salary")) {
+		if (!result.hasFieldErrors("salary")) {
+			if (form.getSalary().length() > 6 || Integer.parseInt(form.getSalary()) > 500000) {
 				result.addError(new FieldError(result.getObjectName(), "salary", "給料は50万円以下で入力してください"));
 			}
 		}
