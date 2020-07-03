@@ -1,12 +1,15 @@
 package jp.co.sample.emp_management.service;
 
+import java.sql.Date;
 import java.util.List;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import jp.co.sample.emp_management.domain.Employee;
+import jp.co.sample.emp_management.form.InsertEmployeeForm;
 import jp.co.sample.emp_management.repository.EmployeeRepository;
 
 /**
@@ -73,16 +76,25 @@ public class EmployeeService {
 	 * 
 	 * @param employee　従業員情報
 	 */
-	public void insert(Employee employee) {
+	public void insert(InsertEmployeeForm form) {
+		Employee employee = new Employee();
+		BeanUtils.copyProperties(form, employee);
+		Integer dataSize = employeeRepository.getMaxId();
+		employee.setId(dataSize + 1);
+		employee.setHireDate(Date.valueOf(form.getHireDate()));
+		employee.setTelephone(form.getTelephone().replace(",", "-"));
+		employee.setSalary(Integer.parseInt(form.getSalary()));
+		employee.setDependentsCount(Integer.parseInt(form.getDependentsCount()));
 		employeeRepository.insert(employee);
 	}
 	
 	/**
-	 * 従業員情報の数を取得します.
-	 * 
-	 * @return 従業員情報の数
+	 * 既にメールアドレスが登録されているかチェックします.
+	 * @param mailAddress メールアドレス
+	 * @return　従業員情報 　存在しない場合はnullが返ります
 	 */
-	public Integer getDataSize() {
-		return employeeRepository.getDataSize();
+	public Employee checkMailAddress(String mailAddress) {
+		Employee employee = employeeRepository.findByMailAddress(mailAddress);
+		return employee;
 	}
 }

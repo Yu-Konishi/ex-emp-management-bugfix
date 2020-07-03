@@ -1,10 +1,8 @@
 package jp.co.sample.emp_management.controller;
 
-import java.sql.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -143,10 +141,14 @@ public class EmployeeController {
 	 */
 	@RequestMapping("/insert")
 	public synchronized String insert(@Validated InsertEmployeeForm form, BindingResult result) {
-		String telephone = form.getTelephone().replace(",", "-");
 		if (!result.hasFieldErrors("telephone")) {
-			if (!Pattern.matches("^0[1-9]0.*", telephone) && telephone.replace("-", "").length() != 10) {
+			if (!Pattern.matches("^0[1-9]0.*", form.getTelephone()) && form.getTelephone().replace("-", "").length() != 10) {
 					result.addError(new FieldError(result.getObjectName(), "telephone", "電話番号が不正です"));
+			}
+		}
+		if(!result.hasFieldErrors("mailAddress")) {
+			if(employeeService.checkMailAddress(form.getMailAddress()) != null) {
+				result.addError(new FieldError(result.getObjectName(), "mailAddress", "このメールアドレスは既に登録されています"));
 			}
 		}
 		if (!result.hasFieldErrors("salary")) {
@@ -157,15 +159,7 @@ public class EmployeeController {
 		if (result.hasErrors()) {
 			return toInsert();
 		}
-		Employee employee = new Employee();
-		BeanUtils.copyProperties(form, employee);
-		Integer dataSize = employeeService.getDataSize();
-		employee.setId(dataSize + 1);
-		employee.setHireDate(Date.valueOf(form.getHireDate()));
-		employee.setTelephone(telephone);
-		employee.setSalary(Integer.parseInt(form.getSalary()));
-		employee.setDependentsCount(Integer.parseInt(form.getDependentsCount()));
-		employeeService.insert(employee);
+		employeeService.insert(form);
 		return "redirect:/employee/showList";
 	}
 }
