@@ -142,7 +142,7 @@ public class EmployeeController {
 	@RequestMapping("/insert")
 	public synchronized String insert(@Validated InsertEmployeeForm form, BindingResult result) {
 		if (!result.hasFieldErrors("telephone")) {
-			if (!Pattern.matches("^0[1-9]0.*", form.getTelephone()) && form.getTelephone().replace("-", "").length() != 10) {
+			if (!Pattern.matches("^0[1-9]0.*", form.getTelephone()) && form.getTelephone().replace(",", "").length() != 10) {
 					result.addError(new FieldError(result.getObjectName(), "telephone", "電話番号が不正です"));
 			}
 		}
