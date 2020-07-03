@@ -94,7 +94,7 @@
 										<label th:if="${#fields.hasErrors('image')}" th:errors="*{image}" class="error-messages">
 											画像を選択してください
 										</label>
-										<input type="file" name="image" id="image" 
+										<input type="file" name="image" id="image" accept=".png,.jpg"
 											 th:field="*{image}" th:errorclass="error-input">
 									</div>
 								</div>
