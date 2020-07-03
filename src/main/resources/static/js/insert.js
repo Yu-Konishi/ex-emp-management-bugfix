@@ -5,7 +5,6 @@ $(function() {
 
 	function setTelephone(id) {
 		var tel = $(id).val().split(",");
-		console.log(tel);
 		var arrayNum = id.replace("#tel", "");
 		$(id).val(tel[parseInt(arrayNum) - 1]);
 	}
