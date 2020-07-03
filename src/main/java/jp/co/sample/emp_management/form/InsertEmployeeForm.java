@@ -17,7 +17,7 @@ public class InsertEmployeeForm {
 	@NotBlank(message="名前を入力してください")
 	private String name;
 	/** 画像 */
-	@NotEmpty(message="画像を選択してください")
+	@Pattern(regexp="^.*\\.png$|^.*\\\\.jpg$",message="画像を選択してください")
 	private String image;
 	/** 性別 */
 	@NotEmpty(message="性別を選択してください")
