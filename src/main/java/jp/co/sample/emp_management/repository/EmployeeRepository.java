@@ -135,4 +135,17 @@ public class EmployeeRepository {
 		}
 		return employeeList.get(0);
 	}
+	
+	/**
+	 * 最大10件の従業員情報を取得します.
+	 * 
+	 * @param pageNum ページ番号
+	 * @return 最大10件の従業員情報
+	 */
+	public List<Employee> findLimit10(Integer pageNum){
+		String sql = "SELECT id,name,image,gender,hire_date,mail_address,zip_code,address,telephone,salary,characteristics,dependents_count from employees ORDER BY hire_date LIMIT 10 OFFSET :pageNum;";
+		SqlParameterSource param = new MapSqlParameterSource().addValue("pageNum",(pageNum-1) * 10);
+		List<Employee> employeeList = template.query(sql, param,EMPLOYEE_ROW_MAPPER);
+		return employeeList;
+	}
 }

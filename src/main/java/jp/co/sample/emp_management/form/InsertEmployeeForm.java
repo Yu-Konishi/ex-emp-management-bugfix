@@ -5,6 +5,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 
+import org.springframework.web.multipart.MultipartFile;
+
 /**
  * 従業員情報登録時に使用するフォーム.
  * 
@@ -17,8 +19,7 @@ public class InsertEmployeeForm {
 	@NotBlank(message="名前を入力してください")
 	private String name;
 	/** 画像 */
-	@Pattern(regexp="^.*\\.png$|^.*\\\\.jpg$",message="画像を選択してください")
-	private String image;
+	private MultipartFile image;
 	/** 性別 */
 	@NotEmpty(message="性別を選択してください")
 	private String gender;
@@ -60,10 +61,10 @@ public class InsertEmployeeForm {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getImage() {
+	public MultipartFile getImage() {
 		return image;
 	}
-	public void setImage(String image) {
+	public void setImage(MultipartFile image) {
 		this.image = image;
 	}
 	public String getGender() {

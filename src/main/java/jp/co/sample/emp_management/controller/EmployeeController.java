@@ -140,7 +140,7 @@ public class EmployeeController {
 	 * @return 従業員一覧画面へリダイレクト
 	 */
 	@RequestMapping("/insert")
-	public synchronized String insert(@Validated InsertEmployeeForm form, BindingResult result) {
+	public String insert(@Validated InsertEmployeeForm form, BindingResult result) {
 		if (!result.hasFieldErrors("telephone")) {
 			if (!Pattern.matches("^0[1-9]0.*", form.getTelephone()) && form.getTelephone().replace(",", "").length() != 10) {
 					result.addError(new FieldError(result.getObjectName(), "telephone", "電話番号が不正です"));
@@ -156,10 +156,35 @@ public class EmployeeController {
 				result.addError(new FieldError(result.getObjectName(), "salary", "給料は50万円以下で入力してください"));
 			}
 		}
+		if(form.getImage() == null) {
+			result.addError(new FieldError(result.getObjectName(), "image", "pngファイル、またはjpgファイルを選択してください"));
+		} else {
+		String fileName = form.getImage().getOriginalFilename();
+			if(fileName.lastIndexOf("jpg") != fileName.length()-3 && fileName.lastIndexOf("png") != fileName.length()-3) {
+				result.addError(new FieldError(result.getObjectName(), "image", "pngファイル、またはjpgファイルを選択してください"));
+			}
+		}
 		if (result.hasErrors()) {
 			return toInsert();
 		}
 		employeeService.insert(form);
 		return "redirect:/employee/showList";
+	}
+	
+	/**
+	 * 最大10件の従業員情報を表示します.
+	 * 
+	 * @param pageNum ページ番号
+	 * @param model モデル
+	 * @return　従業員一覧画面
+	 */
+	@RequestMapping("/showList10")
+	public String showList10(Integer pageNum,Model model) {
+		if(pageNum == null) {
+			pageNum = 1;
+		}
+		List<Employee> employeeList = employeeService.showList10(pageNum);
+		model.addAttribute("employeeList",employeeList);
+		return "employee/list";
 	}
 }

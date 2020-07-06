@@ -1,16 +1,10 @@
 package jp.co.sample.emp_management.service;
 
-import java.awt.image.BufferedImage;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
+import java.io.IOException;
 import java.sql.Date;
+import java.util.Base64;
 import java.util.List;
-import java.util.regex.Pattern;
 
-import javax.imageio.ImageIO;
-
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -84,7 +78,7 @@ public class EmployeeService {
 	 * 
 	 * @param employee　従業員情報
 	 */
-	public void insert(InsertEmployeeForm form) {
+	public synchronized void insert(InsertEmployeeForm form){
 		Employee employee = new Employee();
 		BeanUtils.copyProperties(form, employee);
 		Integer dataSize = employeeRepository.getMaxId();
@@ -94,31 +88,19 @@ public class EmployeeService {
 		employee.setSalary(Integer.parseInt(form.getSalary()));
 		employee.setDependentsCount(Integer.parseInt(form.getDependentsCount()));
 		
-		File file = new File(".\\src\\main\\resources\\static\\img\\" + form.getImage());
 		try {
-			BufferedImage image = ImageIO.read(file);
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			BufferedOutputStream bos = new BufferedOutputStream(baos);
-			image.flush();
-			String base64Image = "";
-			if(Pattern.matches("^.*\\.png$", form.getImage())) {
-				base64Image += "data:image/png;base64,";
-				ImageIO.write(image, "png", bos);
-			} else if(Pattern.matches("^.*\\.jpg$", form.getImage())) {
-				base64Image += "data:image/jpeg;base64,";
-				ImageIO.write(image, "jpg", bos);
+			String base64Image = Base64.getEncoder().encodeToString(form.getImage().getBytes());
+			String fileName = form.getImage().getOriginalFilename();
+			if(fileName.lastIndexOf("jpg") == fileName.length()-3) {
+				base64Image = "data:image/jpeg;base64," + base64Image;
+			} else if(fileName.lastIndexOf("png") == fileName.length()-3) {
+				base64Image = "data:image/png;base64," + base64Image;
 			}
-			bos.flush();
-			bos.close();
-			byte[] byteImage = baos.toByteArray();			
-			Base64 base64 = new Base64();
-			byte[] encoded = base64.encode(byteImage);
-			base64Image = base64Image + new String(encoded);
 			employee.setImage(base64Image);
-		} catch(Exception e) {
+		} catch(IOException e) {
 			e.printStackTrace();
 		}
-		
+			
 		employeeRepository.insert(employee);
 	}
 	
@@ -130,5 +112,16 @@ public class EmployeeService {
 	public Employee checkMailAddress(String mailAddress) {
 		Employee employee = employeeRepository.findByMailAddress(mailAddress);
 		return employee;
+	}
+	
+	/**
+	 * 最大10件の従業員情報を取得します.
+	 * 
+	 * @param pageNum ページ番号
+	 * @return 最大10件の従業員情報
+	 */
+	public List<Employee> showList10(Integer pageNum){
+		List<Employee> employeeList = employeeRepository.findLimit10(pageNum);
+		return employeeList;
 	}
 }
